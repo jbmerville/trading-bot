@@ -1,0 +1,7 @@
+{
+  "python.testing.unittestArgs": ["-v", "-s", "./tst", "-p", "*_test.py"],
+  "python.analysis.extraPaths": ["./src"],
+  "python.testing.pytestEnabled": false,
+  "python.testing.unittestEnabled": true,
+  "editor.tabSize": 4
+}
