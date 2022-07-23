@@ -14,7 +14,10 @@ Parameters:
     AllowedValues:
       - t2.micro
       - m1.small
-
+  BuildBucketName:
+    Type: String
+  BuildObjectKey:
+    Type: String
 Conditions:
   HasVPC: !Not
     - !Equals
@@ -84,13 +87,8 @@ Resources:
       Handler: index.handler
       Role: !GetAtt LambdaExecutionRole.Arn
       Code:
-        ZipFile: !Sub |
-          var response = require('cfn-response');
-          exports.handler = function(event, context) {
-             var responseData = {Value: event.ResourceProperties.List};
-             responseData.Value.push(event.ResourceProperties.AppendedItem);
-             response.send(event, context, response.SUCCESS, responseData);
-          };
+        S3Bucket: !Ref BuildBucketName
+        S3Key: !Ref BuildObjectKey
       Runtime: python3.9
   MyEC2Instance:
     Condition: HasVPC

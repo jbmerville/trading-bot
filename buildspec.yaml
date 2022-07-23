@@ -1,7 +1,18 @@
-pre_build:
-  commands:
-    - pip3 install awscli --upgrade --user
-    - aws codeartifact login --tool pip --domain my_domain --domain-owner 111122223333 --repository my_repo
-build:
-  commands:
-    - pip install requests
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      python: 3.8
+    commands:
+      - pip3 install -r requirements.txt
+  build:
+    commands:
+      - python -m pytest --junitxml=testreport/unittests
+
+reports:
+  pytest_reports:
+    files:
+      - unittests
+    base-directory: testreport
+    file-format: JUNITXML
