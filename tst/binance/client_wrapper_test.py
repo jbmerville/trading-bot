@@ -1,4 +1,6 @@
 import unittest
+import pytest
+import os
 from unittest.mock import MagicMock
 from src.binance.binance_future_order import BinanceFutureOrder
 from src.binance.binance_client_wrapper import BinanceClientWrapper
@@ -15,6 +17,13 @@ AMOUNT = 0
 
 
 class BBinanceClientWrapperTest(unittest.TestCase):
+
+    # Create mock env variable before every test is run
+    @pytest.fixture(autouse=True)
+    def fixture(request):
+        with unittest.mock.patch.dict(os.environ, {"BINANCE_AVAILABLE_TRADING_PAIR": "BTCUSDT,BTCUSDT"}):
+            yield
+
     def test_init(self):
         # Arrange
         binance_client_wrapper = BinanceClientWrapper()

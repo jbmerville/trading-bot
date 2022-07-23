@@ -6,3 +6,8 @@
 2. Set up a python virtual environment named "trading-bot-env" with python 3.10: `python3 -m venv "trading-bot-env"`.
 3. Activate the environment: `source trading-bot-env/bin/activate`
 4. Install dependencies: `pip3 install -r requirements.txt`
+
+### Dev workflow
+
+1. Activate the environment: `source trading-bot-env/bin/activate`
+2. Run unit tests using pytest: `python3 -m pytest tst/* `

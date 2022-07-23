@@ -1,4 +1,6 @@
 import unittest
+import pytest
+import os
 
 from src.binance.binance_future_order import BinanceFutureOrder
 
@@ -14,6 +16,13 @@ AMOUNT = 0
 
 
 class BinanceFutureOrderTest(unittest.TestCase):
+
+    # Create mock env variable before every test is run
+    @pytest.fixture(autouse=True)
+    def fixture(request):
+        with unittest.mock.patch.dict(os.environ, {"BINANCE_AVAILABLE_TRADING_PAIR": "BTCUSDT,BTCUSDT"}):
+            yield
+
     def test_init_valid(self):
         # Arrange
         binance_future_order = BinanceFutureOrder(PERCENTAGE_TO_INVEST, TRADING_PAIR, DIRECTION, ENTRY_PRICE,
