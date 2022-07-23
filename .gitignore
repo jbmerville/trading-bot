@@ -1,3 +1,5 @@
 .env
 .pytest_cache
-__pycache__
+__pycache__/
+trading-bot-env
+*.pyc
