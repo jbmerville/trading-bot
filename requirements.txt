@@ -6,7 +6,6 @@ asyncio==3.4.3
 attrs==21.4.0
 autopep8==1.6.0
 backcall==0.2.0
-backports.zoneinfo==0.2.1
 certifi==2022.6.15
 charset-normalizer==2.0.12
 cryptg==0.3.1
