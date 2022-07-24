@@ -2,5 +2,5 @@
   "python.testing.pytestArgs": ["tests/unit"],
   "python.testing.unittestEnabled": false,
   "python.testing.pytestEnabled": true,
-  "python.testing.pytestPath": "trading-bot-env/bin/pytest"
+  "python.testing.pytestPath": "venv/bin/pytest"
 }
