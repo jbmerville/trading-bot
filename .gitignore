@@ -3,7 +3,7 @@
 __pycache__/
 trading-bot-env
 *.pyc
-
+packaged.yaml
 
 # Created by https://www.gitignore.io/api/osx,linux,python,windows,pycharm,visualstudiocode
 

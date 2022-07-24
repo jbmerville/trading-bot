@@ -1,4 +1,4 @@
-# Trading bot
+# Trading Bot
 
 ### App Architecture
 
@@ -10,18 +10,24 @@ TODO
 
 TODO
 
-### Set up environment
+### Set Up Dev Environment (Mac OS)
 
-1. Download python 3.9 on your mac using brew: `brew install python@3.9 && brew link --overwrite python@3.9`, you can verify you are now using python 3.9 with `python3 -V`.
-2. Set up a python virtual environment named "venv" with python 3.9: `python3 -m venv "venv"`.
+1. Download python 3.9 on your mac using brew: `brew install python@3.9`, you can verify you now have python 3.9 with `python3.9 -V`.
+2. Set up a python virtual environment named "venv" with python 3.9: `python3.9 -m venv "venv"`.
 3. Activate the environment: `source venv/bin/activate`
-4. Install dependencies: `pip3 install -r requirements.txt`
-5. (Optional) Install the AWS SAM CLI (ref: [AWS documenation](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install-mac.html)): `brew install aws-sam-cli`
+4. Install dependencies: `pip3 install -r src/requirements.txt`
+5. Install the AWS SAM CLI (ref: [AWS documentation](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install-mac.html)): `brew install aws-sam-cli`
+6. Install Docker: `brew install --cask docker`.
 
-### Dev workflow
+   Note: _Runing a Docker container is required to run `sam local` commands. Use `sam local` commands to run lambda locally on your desktop, and send events found in the events directory._
+
+### Dev Workflow
 
 1. Activate the environment: `source venv/bin/activate`
 2. Run unit tests using pytest: `python3 -m pytest tests/unit/*`
+3. Run API locally: `sam local start-api`.
+
+   Note: _this command requires Docker. Ref step 6 in Set Up Dev Environment._
 
 ### TODO + Improvements:
 

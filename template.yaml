@@ -1,128 +1,62 @@
 AWSTemplateFormatVersion: "2010-09-09"
-Parameters:
-  ExistingSecurityGroups:
-    Type: String
-    Default: ""
-  ExistingVPC:
-    Type: String
-    Description: The VPC ID that includes the security groups in the ExistingSecurityGroups
-      parameter.
-    Default: ""
-  InstanceType:
-    Type: String
-    Default: t2.micro
-    AllowedValues:
-      - t2.micro
-      - m1.small
-  BuildBucketName:
-    Type: String
-  BuildObjectKey:
-    Type: String
-Conditions:
-  HasVPC: !Not
-    - !Equals
-      - !Ref ExistingVPC
-      - ""
+Transform: "AWS::Serverless-2016-10-31"
 
-Mappings:
-  AWSInstanceType2Arch:
-    t2.micro:
-      Arch: HVM64
-    m1.small:
-      Arch: HVM64
+Metadata:
+  AWS::ServerlessRepo::Application:
+    Name: trading-bot
+    Description: Trading Bot
+    Author: jbmerville
+    ReadmeUrl: README.md
+    Labels: ["tests"]
+    HomePageUrl: https://github.com/jbmerville/trading-bot
+    SemanticVersion: 0.0.1
+    SourceCodeUrl: https://github.com/jbmerville/trading-bot
 
-  AWSRegionArch2AMI:
-    us-east-1:
-      HVM64: ami-0ff8a91507f77f867
-      HVMG2: ami-0a584ac55a7631c0c
-    us-west-2:
-      HVM64: ami-a0cfeed8
-      HVMG2: ami-0e09505bc235aa82d
-    us-west-1:
-      HVM64: ami-0bdb828fd58c52235
-      HVMG2: ami-066ee5fd4a9ef77f1
-    eu-west-1:
-      HVM64: ami-047bb4163c506cd98
-      HVMG2: ami-0a7c483d527806435
-    eu-central-1:
-      HVM64: ami-0233214e13e500f77
-      HVMG2: ami-06223d46a6d0661c7
-    ap-northeast-1:
-      HVM64: ami-06cd52961ce9f0d85
-      HVMG2: ami-053cdd503598e4a9d
-    ap-southeast-1:
-      HVM64: ami-08569b978cc4dfa10
-      HVMG2: ami-0be9df32ae9f92309
-    ap-southeast-2:
-      HVM64: ami-09b42976632b27e9b
-      HVMG2: ami-0a9ce9fecc3d1daf8
-    sa-east-1:
-      HVM64: ami-07b14488da8ea02a0
-      HVMG2: NOT_SUPPORTED
-    cn-north-1:
-      HVM64: ami-0a4eaf6c4454eda75
-      HVMG2: NOT_SUPPORTED
+Globals:
+  Api:
+    EndpointConfiguration: REGIONAL
+    # Your CORS hosts need to be in this format - note the two layers of quotes.
+    Cors: "'*'"
 
+# Our Python callback
 Resources:
-  SecurityGroup:
-    Condition: HasVPC
-    Type: AWS::EC2::SecurityGroup
+  YourFunction:
+    Type: AWS::Serverless::Function
     Properties:
-      GroupDescription: Allow HTTP traffic to the host
-      VpcId:
-        Ref: ExistingVPC
-      SecurityGroupIngress:
-        - IpProtocol: tcp
-          FromPort: 80
-          ToPort: 80
-          CidrIp: 0.0.0.0/0
-      SecurityGroupEgress:
-        - IpProtocol: tcp
-          FromPort: 80
-          ToPort: 80
-          CidrIp: 0.0.0.0/0
-  TradingBotFunction:
-    Type: AWS::Lambda::Function
-    Properties:
-      Handler: index.handler
-      Role: !GetAtt LambdaExecutionRole.Arn
-      Code:
-        S3Bucket: !Ref BuildBucketName
-        S3Key: !Ref BuildObjectKey
+      Handler: app.lambda_handler
       Runtime: python3.9
-  MyEC2Instance:
-    Condition: HasVPC
-    Type: AWS::EC2::Instance
+      CodeUri: src/
+      Events:
+        Callback:
+          Type: Api
+          Properties:
+            Path: /yourcallback
+            Method: get
+            RestApiId:
+              Ref: YourAPIGateway
+
+  # Our callback API
+  YourAPIGateway:
+    Type: AWS::Serverless::Api
+    DependsOn: YourFunction
     Properties:
-      ImageId:
-        Fn::FindInMap:
-          - AWSRegionArch2AMI
-          - Ref: AWS::Region
-          - Fn::FindInMap:
-              - AWSInstanceType2Arch
-              - Ref: InstanceType
-              - Arch
-      InstanceType:
-        Ref: InstanceType
-  LambdaExecutionRole:
-    Type: AWS::IAM::Role
-    Properties:
-      AssumeRolePolicyDocument:
-        Version: "2012-10-17"
-        Statement:
-          - Effect: Allow
-            Principal:
-              Service:
-                - lambda.amazonaws.com
-            Action:
-              - sts:AssumeRole
-      Path: "/"
-      Policies:
-        - PolicyName: root
-          PolicyDocument:
-            Version: "2012-10-17"
-            Statement:
-              - Effect: Allow
-                Action:
-                  - logs:*
-                Resource: arn:aws:logs:*:*:*
+      StageName: prod
+      DefinitionBody:
+        swagger: 2.0
+        info:
+          version: "1.0"
+          title: "A nice title"
+        basePath: /prod
+        schemes:
+          - "https"
+        paths:
+          /callback:
+            get:
+              responses: {}
+              x-amazon-apigateway-integration:
+                uri:
+                  # You need to build up the ARN with this pattern - you can't just use a !Ref or !GetAtt AFAIK.
+                  Fn::Sub: arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${YourFunction.Arn}/invocations
+                passthroughBehavior: "when_no_match"
+                httpMethod: "POST"
+                type: "aws_proxy"

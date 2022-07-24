@@ -1,18 +1,11 @@
 version: 0.2
-
 phases:
   install:
     runtime-versions:
       python: 3.8
-    commands:
-      - pip3 install -r requirements.txt
   build:
     commands:
-      - python -m pytest --junitxml=testreport/unittests
-
-reports:
-  pytest_reports:
-    files:
-      - unittests
-    base-directory: testreport
-    file-format: JUNITXML
+      - sam package --template-file template.yaml --s3-bucket sam-bucket-trading-bot --output-template-file packaged-template.yml
+artifacts:
+  files:
+    - packaged-template.yml
