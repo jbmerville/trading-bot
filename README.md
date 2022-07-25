@@ -1,4 +1,4 @@
-# Trading bot
+# Trading bot ![Generic badge](https://codepipeline-us-west-2-821163322213.s3.us-west-2.amazonaws.com/badges/main-build.svg)
 
 ### App Architecture
 
@@ -12,8 +12,8 @@ TODO
 
 ### Set up environment
 
-1. Download python 3.9 on your mac using brew: `brew install python@3.9 && brew link --overwrite python@3.9`, you can verify you are now using python 3.9 with `python3 -V`.
-2. Set up a python virtual environment named "venv" with python 3.9: `python3 -m venv "venv"`.
+1. Download python 3.8 on your mac using brew: `brew install python@3.8`, you can verify you are now using python 3.9 with `python3.8 -V`.
+2. Set up a python virtual environment named "venv" with python 3.8: `python3.8 -m venv "venv"`.
 3. Activate the environment: `source venv/bin/activate`
 4. Install dependencies: `pip3 install -r requirements.txt`
 5. (Optional) Install the AWS SAM CLI (ref: [AWS documenation](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install-mac.html)): `brew install aws-sam-cli`

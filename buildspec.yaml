@@ -6,9 +6,28 @@ phases:
       python: 3.8
     commands:
       - pip3 install -r requirements.txt
+  pre_build:
+    commands:
+      - buildExitCode=1
+      - echo Logging into install phase...
+      - yum update -y
+      - yum install sudo -y
   build:
     commands:
+      - echo Build started
       - python -m pytest --junitxml=testreport/unittests
+      - buildExitCode=$?
+    finally:
+      - |
+        if [ "$buildExitCode" -ne 0 ]; then
+          badge_status=failing
+          badge_colour=red
+        else
+          badge_status=passing
+          badge_colour=green
+        fi
+      - curl -s "https://img.shields.io/badge/Build-$badge_status-$badge_colour.svg" > main-build.svg
+      - aws s3 cp main-build.svg s3://codepipeline-us-west-2-821163322213/badges/main-build.svg --acl public-read --cache-control no-cache
 
 reports:
   pytest_reports:
